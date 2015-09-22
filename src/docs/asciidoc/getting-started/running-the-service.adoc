@@ -1,0 +1,34 @@
+[getting-started-running-the-service]
+== Running the service
+
+This service is written using http://projects.spring.io/spring-boot[Spring Boot] which
+makes it easy to get it up and running so that you can start exploring the REST API.
+
+At the moment, binaries are not published anywhere. However, building
+and running it from source is straightforward. The first step is to clone the Git
+repository:
+
+[source,bash]
+----
+$ git clone https://github.com/olivergierke/spring-restbucks.git
+----
+
+Once the clone is complete, you're ready to get the service up and running:
+
+[source,bash]
+----
+$ cd spring-restbucks
+$ ./gradlew bootRun
+----
+
+You can check that the service is up and running by executing a simple request using
+cURL:
+
+include::{snippets}/index-example/curl-request.adoc[]
+
+This request should yield the following response:
+
+include::{snippets}/index-example/http-response.adoc[]
+
+Note the `_links` in the JSON response. They are key to navigating the API.
+

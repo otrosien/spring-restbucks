@@ -15,14 +15,17 @@
  */
 package org.springsource.restbucks.engine.web;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.restdocs.RestDocumentation.document;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import org.junit.Test;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.hypermedia.HypermediaDocumentation;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springsource.restbucks.AbstractWebIntegrationTest;
 import org.springsource.restbucks.Restbucks;
@@ -42,6 +45,14 @@ public class EngineControllerIntegrationTests extends AbstractWebIntegrationTest
 		MockHttpServletResponse response = mvc.perform(get("/")).//
 				andDo(MockMvcResultHandlers.print()).//
 				andExpect(linkWithRelIsPresent(ENGINE_REL)). //
+				andDo(document("index",
+						HypermediaDocumentation.links(
+								linkWithRel("restbucks:orders").description("TODO"),
+								linkWithRel(ENGINE_REL).description("TODO"),
+								linkWithRel("restbucks:pages").description("TODO"),
+								linkWithRel("profile").description("TODO"),
+								linkWithRel("curies").description("TODO")
+				))).
 				andReturn().getResponse();
 
 		LinkDiscoverer discoverer = links.getLinkDiscovererFor(response.getContentType());

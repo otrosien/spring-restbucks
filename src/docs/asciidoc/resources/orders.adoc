@@ -1,0 +1,72 @@
+[[resources-orders]]
+== Orders
+
+The Order resources is used to manage coffee orders.
+
+
+[[resources-orders-list]]
+=== Listing orders
+
+A `GET` request will list all of the service's orders.
+
+==== Response structure
+
+include::{snippets}/orders-list/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/orders-list/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/orders-list/http-response.adoc[]
+
+
+[[resources-orders-create]]
+=== Creating an order
+
+A `POST` request is used to create an order.
+
+==== Request structure
+
+include::{snippets}/orders-create/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/orders-create/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/orders-create/http-response.adoc[]
+
+
+[[resources-order-get]]
+=== Retrieving an order
+
+A `GET` request is used to retrieve the details of an order.
+
+==== Response structure
+
+include::{snippets}/order-get/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/order-get/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/order-get/http-response.adoc[]
+
+
+[[resources-order-delete]]
+=== Deleting an order
+
+A `DELETE` request is used to delete an order.
+
+==== Example request
+
+include::{snippets}/order-delete/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/order-delete/http-response.adoc[]

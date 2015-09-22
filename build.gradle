@@ -10,7 +10,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.2"
     }
 }
 
@@ -19,6 +20,7 @@ apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: 'org.asciidoctor.convert'
 
 repositories {
     mavenLocal()
@@ -49,6 +51,7 @@ dependencies {
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.jayway.jsonpath:json-path:2.0.0'
+    testCompile 'org.springframework.restdocs:spring-restdocs:1.0.0.BUILD-SNAPSHOT'
 }
 
 eclipse {
@@ -60,6 +63,36 @@ eclipse {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
+    outputs.dir snippetsDir
+}
+
+
+asciidoctor {
+    sources {
+        include '*.adoc'
+    }
+
+    attributes 'snippets': snippetsDir
+    attributes 'version': project.version
+
+    inputs.dir snippetsDir
+
+    dependsOn test
+}
+
+jar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
 
 wrapper {

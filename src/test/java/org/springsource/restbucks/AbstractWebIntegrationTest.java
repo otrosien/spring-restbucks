@@ -15,8 +15,11 @@
  */
 package org.springsource.restbucks;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.springframework.restdocs.RestDocumentation.documentationConfiguration;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -49,7 +52,7 @@ public abstract class AbstractWebIntegrationTest {
 
 	@Before
 	public void setUp() {
-		mvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mvc = MockMvcBuilders.webAppContextSetup(context).apply(documentationConfiguration()).build();
 	}
 
 	/**

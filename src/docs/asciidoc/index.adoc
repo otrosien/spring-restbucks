@@ -1,0 +1,38 @@
+= Spring Restbucks
+Oliver Gierke <ogierke@gopivotal.com>
+:revnumber: {version}
+:revdate: {localdate}
+:doctype: book
+:toc: left
+:source-highlighter: highlightjs
+
+= Getting Started
+
+include::getting-started/introduction.adoc[]
+
+include::getting-started/running-the-service.adoc[]
+
+
+= API Guide
+
+include::api-guide/overview.adoc[]
+
+include::api-guide/http_verbs.adoc[]
+
+include::api-guide/status_codes.adoc[]
+
+include::api-guide/errors.adoc[]
+
+include::api-guide/hypermedia.adoc[]
+
+include::api-guide/paging.adoc[]
+
+include::api-guide/authentication.adoc[]
+
+
+= Resources
+
+include::resources/index.adoc[]
+
+include::resources/orders.adoc[]
+

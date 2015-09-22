@@ -1,0 +1,25 @@
+[[overview-paging]]
+== Pagination
+
+Resource collections are commonly paged. Pagination is represented with the following JSON fields.
+
+|===
+|Path|Type|Description
+
+|page.size
+|Number
+|Requested size of the page.
+
+|page.totalElements
+|Number
+|The total number of elements available.
+
+|page.totalPages
+|Number
+|How many pages are available in total.
+
+|page.number
+|Number
+|The number of the current page. The first page in a result set has number "0".
+
+|===

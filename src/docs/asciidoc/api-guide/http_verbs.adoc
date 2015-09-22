@@ -1,0 +1,17 @@
+[[overview-http-verbs]]
+== HTTP verbs
+
+The supported HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `DELETE`
+| Used to delete an existing resource
+|===
