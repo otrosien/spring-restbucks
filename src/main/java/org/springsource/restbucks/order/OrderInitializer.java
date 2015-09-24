@@ -47,11 +47,11 @@ class OrderInitializer {
 		}
 
 		LineItem javaChip = new LineItem("Java Chip", Money.of(4.20, EURO));
-		LineItem cappuchino = new LineItem("Cappuchino", Money.of(3.20, EURO));
+		LineItem cappuccino = new LineItem("Cappuccino", Money.of(3.20, EURO));
 
 		Order javaChipOrder = new Order(javaChip);
-		Order cappuchinoOrder = new Order(cappuchino);
+		Order cappuccinoOrder = new Order(cappuccino);
 
-		orders.save(Arrays.asList(javaChipOrder, cappuchinoOrder));
+		orders.save(Arrays.asList(javaChipOrder, cappuccinoOrder));
 	}
 }

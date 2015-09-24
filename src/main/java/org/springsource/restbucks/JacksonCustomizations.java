@@ -109,11 +109,13 @@ class JacksonCustomizations {
 	@SuppressWarnings("serial")
 	static class MoneyModule extends SimpleModule {
 
-		private static final MonetaryAmountFormat FORMAT = MonetaryFormats.getAmountFormat(Locale.US);
-
 		public MoneyModule() {
 			addSerializer(MonetaryAmount.class, new MonetaryAmountSerializer());
 			addValueInstantiator(MonetaryAmount.class, new MoneyInstantiator());
+		}
+
+		private static MonetaryAmountFormat monetaryAmountFormatter() {
+			return MonetaryFormats.getAmountFormat(Locale.ROOT);
 		}
 
 		/**
@@ -146,7 +148,11 @@ class JacksonCustomizations {
 			@Override
 			public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
 					throws IOException, JsonGenerationException {
-				jgen.writeString(FORMAT.format((MonetaryAmount) value));
+				// From MonetaryAmountFormat javadoc
+				// Instances of this class are not required to be thread-safe. It is recommended to of separate
+				// * format instances for each thread. If multiple threads access a format concurrently, it must be
+				// * synchronized externally.
+				jgen.writeString(monetaryAmountFormatter().format((MonetaryAmount) value));
 			}
 
 			/*
@@ -185,7 +191,7 @@ class JacksonCustomizations {
 			 */
 			@Override
 			public Object createFromString(DeserializationContext ctxt, String value) throws IOException {
-				return Money.parse(value, FORMAT);
+				return Money.parse(value, monetaryAmountFormatter());
 			}
 		}
 	}
