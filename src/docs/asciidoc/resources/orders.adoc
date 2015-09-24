@@ -49,6 +49,10 @@ A `GET` request is used to retrieve the details of an order.
 
 include::{snippets}/order-get/response-fields.adoc[]
 
+==== Links
+
+include::{snippets}/order-get/links.adoc[replacements]
+
 ==== Example request
 
 include::{snippets}/order-get/curl-request.adoc[]
@@ -58,15 +62,9 @@ include::{snippets}/order-get/curl-request.adoc[]
 include::{snippets}/order-get/http-response.adoc[]
 
 
-[[resources-order-delete]]
-=== Deleting an order
+[[resources-order-schema]]
+=== JSON Schema
 
-A `DELETE` request is used to delete an order.
+Schema of an order
 
-==== Example request
-
-include::{snippets}/order-delete/curl-request.adoc[]
-
-==== Example response
-
-include::{snippets}/order-delete/http-response.adoc[]
+include::{snippets}/order-schema/http-response.adoc[]

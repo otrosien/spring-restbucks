@@ -15,12 +15,18 @@
  */
 package org.springsource.restbucks.order.web;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.springframework.restdocs.RestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springsource.restbucks.AbstractWebIntegrationTest;
 
@@ -34,10 +40,35 @@ public class OrderResourceIntegrationTest extends AbstractWebIntegrationTest {
 	@Test
 	public void exposesOrdersResourceViaRootResource() throws Exception {
 
-		mvc.perform(get("/")).//
+		MockHttpServletResponse response = mvc.perform(get("/")).//
 				andDo(MockMvcResultHandlers.print()).//
 				andExpect(status().isOk()). //
 				andExpect(content().contentType(MediaTypes.HAL_JSON)). //
-				andExpect(jsonPath("$._links.restbucks:orders.href", notNullValue()));
+				andExpect(jsonPath("$._links.restbucks:orders.href", notNullValue())). //
+				andReturn().getResponse();
+		
+		LinkDiscoverer discoverer = links.getLinkDiscovererFor(response.getContentType());
+		Link link = discoverer.findLinkWithRel("profile", response.getContentAsString());
+
+		response = mvc.perform(get(link.getHref())).//
+				andDo(MockMvcResultHandlers.print()).//
+				andExpect(status().isOk()). //
+				andReturn().getResponse();
+
+		discoverer = links.getLinkDiscovererFor(response.getContentType());
+		link = discoverer.findLinkWithRel("restbucks:orders", response.getContentAsString());
+
+		mvc.perform(get(link.getHref()).accept("application/schema+json")).//
+				andDo(MockMvcResultHandlers.print()).//
+				andExpect(status().isOk()). //
+				andExpect(content().contentType("application/schema+json")). //
+				andDo(document("order-schema"));
+
+	}
+
+	@Test
+	public void exposesOrdersAsJsonSchema() throws Exception {
+
+
 	}
 }

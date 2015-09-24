@@ -20,7 +20,11 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+import java.util.Properties;
+
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.MediaTypes;
@@ -42,23 +46,27 @@ public class EngineControllerIntegrationTests extends AbstractWebIntegrationTest
 	@Test
 	public void customControllerReturnsDefaultMediaType() throws Exception {
 
+		Properties props = PropertiesLoaderUtils.loadProperties(new ClassPathResource("/rest-messages.properties"));
+
 		MockHttpServletResponse response = mvc.perform(get("/")).//
 				andDo(MockMvcResultHandlers.print()).//
 				andExpect(linkWithRelIsPresent(ENGINE_REL)). //
 				andDo(document("index",
 						HypermediaDocumentation.links(
-								linkWithRel("restbucks:orders").description("TODO"),
-								linkWithRel(ENGINE_REL).description("TODO"),
-								linkWithRel("restbucks:pages").description("TODO"),
-								linkWithRel("profile").description("TODO"),
-								linkWithRel("curies").description("TODO")
+								linkWithRel("restbucks:orders").description(props.getProperty("_links.orders.title")),
+								linkWithRel(ENGINE_REL).description(props.getProperty("_links.engine.title")),
+								linkWithRel("restbucks:pages").description(props.getProperty("_links.pages.title")),
+								linkWithRel("profile").description(props.getProperty("_links.profile.title")),
+								linkWithRel("curies").description("{some.curies}")
 				))).
 				andReturn().getResponse();
 
 		LinkDiscoverer discoverer = links.getLinkDiscovererFor(response.getContentType());
 		Link link = discoverer.findLinkWithRel(ENGINE_REL, response.getContentAsString());
 
+		// the list of orders in progress is empty.
 		mvc.perform(get(link.getHref())). //
-				andExpect(content().contentTypeCompatibleWith(MediaTypes.HAL_JSON));
+				andExpect(content().contentTypeCompatibleWith(MediaTypes.HAL_JSON)).
+				andDo(document("engine"));
 	}
 }

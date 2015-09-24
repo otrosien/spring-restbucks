@@ -15,13 +15,25 @@
  */
 package org.springsource.restbucks.payment.web;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.springframework.restdocs.RestDocumentation.document;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.file.Files;
 
@@ -34,12 +46,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.hypermedia.HypermediaDocumentation;
+import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springsource.restbucks.AbstractWebIntegrationTest;
 import org.springsource.restbucks.Restbucks;
 import org.springsource.restbucks.order.Order;
 
 import com.jayway.jsonpath.JsonPath;
+
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 
 /**
  * Integration tests modeling the hypermedia-driven interaction flow against the server implementation. Uses the Spring
@@ -146,6 +163,14 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				.perform(post(ordersLink.expand().getHref()).contentType(MediaType.APPLICATION_JSON).content(data)). //
 				andExpect(status().isCreated()). //
 				andExpect(header().string("Location", is(notNullValue()))). //
+				andDo(document("orders-create", requestFields( //
+						fieldWithPath("lineItems[].name").description("line item name"), //
+						fieldWithPath("lineItems[].quantity").description("line item quantity"), //
+						fieldWithPath("lineItems[].milk").description("line item choice for milk"), //
+						fieldWithPath("lineItems[].size").description("line item choice for size"), //
+						fieldWithPath("lineItems[].price").description("line item price"), //
+						fieldWithPath("location").description("Drink here or take away.") //
+				))). //
 				andReturn().getResponse();
 
 		return mvc.perform(get(result.getHeader("Location"))).andReturn().getResponse();
@@ -197,6 +222,27 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				andExpect(linkWithRelIsPresent(CANCEL_REL)). //
 				andExpect(linkWithRelIsPresent(UPDATE_REL)). //
 				andExpect(linkWithRelIsPresent(PAYMENT_REL)).//
+				andDo(document("order-get", //
+						HypermediaDocumentation.links(
+								linkWithRel("self").description("Canonical URI"),
+								linkWithRel("restbucks:order").description("link to the order ").attributes(new Attributes.Attribute("projection","projection ?")),
+								linkWithRel("restbucks:update").description("update the order"),
+								linkWithRel("curies").description("curies"),
+								linkWithRel("restbucks:cancel").description("cancel the order"),
+								linkWithRel("restbucks:payment").description("pay the order")
+						),
+						responseFields(
+								fieldWithPath("lineItems[].name").description("line item name"), //
+								fieldWithPath("lineItems[].quantity").description("line item quantity"), //
+								fieldWithPath("lineItems[].milk").description("line item choice for milk"), //
+								fieldWithPath("lineItems[].size").description("line item choice for size"), //
+								fieldWithPath("lineItems[].price").description("line item price"), //
+								fieldWithPath("orderedDate").description("order date"),
+								fieldWithPath("status").description("order status"),
+								fieldWithPath("price").description("order total price"),
+								fieldWithPath("_links").description("Links"),
+								fieldWithPath("location").description("Drink here or take away.") //
+				))).
 				andReturn().getResponse();
 	}
 
