@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.money.MonetaryAmount;
-import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryFormats;
 
 import org.javamoney.moneta.Money;
@@ -77,7 +76,7 @@ class JacksonCustomizations {
 
 		public RestbucksModule() {
 
-			setMixInAnnotation(Order.class, RestbucksModule.OrderMixin.class);
+			setMixInAnnotation(Order.class, OrderMixin.class);
 			setMixInAnnotation(LineItem.class, LineItemMixin.class);
 			setMixInAnnotation(CreditCard.class, CreditCardMixin.class);
 			setMixInAnnotation(CreditCardNumber.class, CreditCardNumberMixin.class);
@@ -93,7 +92,7 @@ class JacksonCustomizations {
 		static abstract class LineItemMixin {
 
 			@JsonCreator
-			public LineItemMixin(String name, int amount, Milk milk, Size size, Money price) {}
+			public LineItemMixin(String name, int quantity, Milk milk, Size size, MonetaryAmount price) {}
 		}
 
 		@JsonAutoDetect(isGetterVisibility = JsonAutoDetect.Visibility.NONE)
@@ -109,11 +108,9 @@ class JacksonCustomizations {
 	@SuppressWarnings("serial")
 	static class MoneyModule extends SimpleModule {
 
-		private static final MonetaryAmountFormat FORMAT = MonetaryFormats.getAmountFormat(Locale.US);
-
 		public MoneyModule() {
 			addSerializer(MonetaryAmount.class, new MonetaryAmountSerializer());
-			addValueInstantiator(Money.class, new MoneyInstantiator());
+			addValueInstantiator(MonetaryAmount.class, new MoneyInstantiator());
 		}
 
 		/**
@@ -146,7 +143,7 @@ class JacksonCustomizations {
 			@Override
 			public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
 					throws IOException, JsonGenerationException {
-				jgen.writeString(FORMAT.format((MonetaryAmount) value));
+				jgen.writeString(MonetaryFormats.getAmountFormat(Locale.ROOT).format((MonetaryAmount) value));
 			}
 
 			/*
@@ -167,7 +164,7 @@ class JacksonCustomizations {
 			 */
 			@Override
 			public String getValueTypeDesc() {
-				return Money.class.toString();
+				return MonetaryAmount.class.toString();
 			}
 
 			/*
@@ -185,7 +182,7 @@ class JacksonCustomizations {
 			 */
 			@Override
 			public Object createFromString(DeserializationContext ctxt, String value) throws IOException {
-				return Money.parse(value, FORMAT);
+				return Money.parse(value, MonetaryFormats.getAmountFormat(Locale.ROOT));
 			}
 		}
 	}

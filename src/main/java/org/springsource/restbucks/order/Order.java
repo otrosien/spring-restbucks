@@ -15,8 +15,7 @@
  */
 package org.springsource.restbucks.order;
 
-import lombok.Getter;
-import lombok.ToString;
+import static org.springsource.restbucks.core.Currencies.EURO;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -32,6 +31,9 @@ import javax.persistence.Table;
 
 import org.javamoney.moneta.Money;
 import org.springsource.restbucks.core.AbstractEntity;
+
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * An order.
@@ -87,7 +89,7 @@ public class Order extends AbstractEntity {
 
 		return lineItems.stream().//
 				map(LineItem::getPrice).//
-				reduce(MonetaryAmount::add).orElse(Money.of(0.0, "EUR"));
+				reduce(MonetaryAmount::add).orElse(Money.of(0.0, EURO));
 	}
 
 	/**
